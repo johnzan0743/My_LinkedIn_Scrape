@@ -7,6 +7,9 @@ Created on Fri Aug  7 14:04:20 2020
 """
 import time
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 # one-time only
 def login(driver):
@@ -30,6 +33,21 @@ def login(driver):
     
     
     # Disable message overlay panel
-    element = driver.find_element_by_xpath("//aside[@id='msg-overlay']/div[1]/header[1]/section[1]/button[1]")
-    element.click()
-    time.sleep(2)
+    # element = driver.find_element_by_xpath("//aside[@id='msg-overlay']/div[1]/header[1]/section[1]/button[1]")
+
+    try:
+        element = WebDriverWait(driver,25).until(EC.element_to_be_clickable(
+            (By.XPATH,"//aside[@id='msg-overlay']/div[1]/header[1]/section[1]/button[1]")))
+        time.sleep(2)
+        element.click()
+        print('Msg overlay hidden')
+
+    except:
+        print('msg overlay warning')
+
+
+
+
+
+
+

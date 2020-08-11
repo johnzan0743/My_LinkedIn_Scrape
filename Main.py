@@ -41,7 +41,20 @@ except:
 
 Instance = Scrape.Scraping(driver)
 url_list = Instance.get_all_urls(driver)
-job_links = Instance.get_all_links(driver,url_list[1])
+
+# url_list must not be empty
+'''
+if url_list: 
+    for i in range(len(url_list)):
+        if i >= 10:
+            print('Only the first 10 pages of searched results are studied')
+            break
+'''
+original_job_links, shortened_job_links, job_ids = Instance.get_all_links(driver,url_list[1])
+        
+        
+    
+    
 
 
 

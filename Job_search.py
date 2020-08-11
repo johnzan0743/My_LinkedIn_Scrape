@@ -9,14 +9,18 @@ import time
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 def Search(driver,search_bar,result_filter):
 # go to job market
     url_jobs = 'https://www.linkedin.com/jobs/search/'
     driver.get(url_jobs)
-    time.sleep(3)
+    time.sleep(1)
     
-    element = driver.find_element_by_xpath("//div[@class ='nav-search-bar']/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/input[1]")
+    #element = driver.find_element_by_xpath("//div[@class ='nav-search-bar']/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/input[1]")
+    element = WebDriverWait(driver,25).until(EC.visibility_of_element_located((By.XPATH,("//div[@class ='nav-search-bar']/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/input[1]"))))
     
     # Search by keyword and location
     search_keyword = search_bar['keyword']
@@ -29,22 +33,26 @@ def Search(driver,search_bar,result_filter):
     element.send_keys(location)
     time.sleep(3)
     element.send_keys(Keys.TAB + Keys.ENTER)
-    time.sleep(3)
+    time.sleep(1)
     
-    # driver.find_element_by_xpath("//button[@class='jobs-search-box__submit-button artdeco-button artdeco-button--3 ml2']").submit()
     
     
     # Refine Search Settings
-    element = driver.find_element_by_xpath("//section[@aria-label='search filters']/div[1]/div[1]/button[1]")
+    #element = driver.find_element_by_xpath("//section[@aria-label='search filters']/div[1]/div[1]/button[1]")
+    
+    element = WebDriverWait(driver,25).until(EC.visibility_of_element_located((By.XPATH,("//section[@aria-label='search filters']/div[1]/div[1]/button[1]"))))
     element.click()
     time.sleep(2)
     
     # Clear Filters
-    try:
-        driver.find_element_by_xpath("//button[@date-control-name='all_filters_clear']").click()
-        time.sleep(1)
-    except:
-        pass
+    for i in range(3):
+        try:
+            driver.find_element_by_xpath("//button[@date-control-name='all_filters_clear']").click()
+            print('Filters Cleared')
+            time.sleep(1)
+            break
+        except:
+            pass
     
     
     # Single-Choice: Sort By
@@ -88,6 +96,7 @@ def Search(driver,search_bar,result_filter):
             driver.find_element_by_xpath("//label[@for='experience-5']").click()
         if 'Executive' in result_filter['Experience Level']:
             driver.find_element_by_xpath("//label[@for='experience-6']").click()
+    time.sleep(1)
         
         
     # Multiple-Choice: Job-Type
@@ -124,9 +133,9 @@ def Search(driver,search_bar,result_filter):
             except NoSuchElementException:
                 print('Cannot find Temporary type of job')
                 pass
+    time.sleep(1)
         
     # Apply filter
-    time.sleep(1)
     driver.find_element_by_xpath("//button[@data-control-name='all_filters_apply']").click()
     time.sleep(1)
 
