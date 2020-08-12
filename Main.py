@@ -77,29 +77,43 @@ for m in range(len(url_list)):
         info = {}
         if soup:
             info['job_link'] = shortened_job_links[n]
-            temp = soup.find('section',{'class':'show-more-less-html'})
-            temp_text = temp.get_text(('\n'))
-            temp_text = temp_text.replace('\n \n','\n')
-            info['job_description'] = temp_text.replace('\n','\n\n')
-            info['job_title'] = soup.find('h2').text
-            company_info = soup.findAll('h3',{'class':"topcard__flavor-row"})
-            info['company_name'] = company_info[0].select('span')[0].text
-            info['company_location'] = company_info[0].select('span')[1].text
-            info['post_time'] = company_info[1].select('span')[0].text
-            info['current_applicants'] = company_info[1].select('span')[1].text
-            job_attributes = soup.find('ul',{'class':'job-criteria__list'}).select('h3')
-            job_attributes_li = soup.find('ul',{'class':'job-criteria__list'}).select('li')
-            for i in range(len(job_attributes)):
-                # info[job_attributes[i].text] = job_attributes_li[i].text
-                temp_list = job_attributes_li[i].select('span')
-                temp_text = ''
-                for temp in temp_list:
-                    temp_text +=(temp.text + ',\n')
-                info[job_attributes[i].text] = temp_text
+            try:
+                temp = soup.find('section',{'class':'show-more-less-html'})
+                temp_text = temp.get_text(('\n'))
+                temp_text = temp_text.replace('\n \n','\n')
+                info['job_description'] = temp_text.replace('\n','\n\n')
+                info['job_title'] = soup.find('h2').text
+            except Exception as e:
+                print('Something is wrong with the job_description of {}'.format(shortened_job_links[n]))
+                print(e)
+            
+            try:
+                company_info = soup.findAll('h3',{'class':"topcard__flavor-row"})
+                info['company_name'] = company_info[0].select('span')[0].text
+                info['company_location'] = company_info[0].select('span')[1].text
+                info['post_time'] = company_info[1].select('span')[0].text
+                info['current_applicants'] = company_info[1].select('span')[1].text
+            except Exception as e:
+                print('Something is wrong with the company_info of {}'.format(shortened_job_links[n]))
+                print(e)
+                
+            try:                
+                job_attributes = soup.find('ul',{'class':'job-criteria__list'}).select('h3')
+                job_attributes_li = soup.find('ul',{'class':'job-criteria__list'}).select('li')
+                for i in range(len(job_attributes)):
+                    # info[job_attributes[i].text] = job_attributes_li[i].text
+                    temp_list = job_attributes_li[i].select('span')
+                    temp_text = ''
+                    for temp in temp_list:
+                        temp_text +=(temp.text + ',\n')
+                    info[job_attributes[i].text] = temp_text
+            except Exception as e:
+                print('Something is wrong with the job_attributes of {}'.format(shortened_job_links[n]))
+                print(e)
         
         big_dict[soup.title.text] = info
         print('{} scraping is finished'.format(soup.title.text))
-    final_dict['page'+ ' ' + m + 'of search results'] = big_dict
+    final_dict['page'+ ' ' + str(m) + 'of search results'] = big_dict
     print('Scraping for the page {} of the search results is finished'.format(m))
     print('================================')
     time.sleep(randint(5,10))
