@@ -113,8 +113,8 @@ for m in range(len(url_list)):
         
         big_dict[soup.title.text] = info
         print('{} scraping is finished'.format(soup.title.text))
-    final_dict['page'+ ' ' + str(m) + 'of search results'] = big_dict
-    print('Scraping for the page {} of the search results is finished'.format(m))
+    final_dict['page ' + str(m+1) + ' of search results'] = big_dict
+    print('Scraping for the page {} of the search results is finished'.format(m+1))
     print('================================')
     time.sleep(randint(5,10))
     
