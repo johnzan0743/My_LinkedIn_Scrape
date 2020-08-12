@@ -14,6 +14,7 @@ import requests
 import re
 import time
 import json
+from random import randint
 # from bs4 import BeautifulSoup
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
@@ -53,40 +54,55 @@ Instance = Scrape.Scraping(driver)
 url_list = Instance.get_all_urls(driver)
 
 # url_list must not be empty
-'''
+
 if url_list: 
     for i in range(len(url_list)):
         if i >= 10:
             print('Only the first 10 pages of searched results are studied')
+            url_list = url_list[0:10]
             break
-'''
-original_job_links, shortened_job_links, job_ids = Instance.get_all_links(driver,url_list[1])
 
-# soup = Instance.get_job_information(driver,shortened_job_links[0])
+final_dict = {}
 
-url = 'https://www.linkedin.com/jobs/view/1880454978/'
-soup = Instance.get_job_information(driver,url)
-info = {}
-if soup:
-    temp = soup.find('section',{'class':'show-more-less-html'})
-    temp_text = temp.get_text(('\n'))
-    temp_text = temp_text.replace('\n \n','\n')
-    info['job_description'] = temp_text.replace('\n','\n\n')
-    info['job_title'] = soup.find('h2').text
-    company_info = soup.findAll('h3',{'class':"topcard__flavor-row"})
-    info['company_name'] = company_info[0].select('span')[0].text
-    info['company_location'] = company_info[0].select('span')[1].text
-    info['post_time'] = company_info[1].select('span')[0].text
-    info['current_applicants'] = company_info[1].select('span')[1].text
-    job_attributes = soup.find('ul',{'class':'job-criteria__list'}).select('h3')
-    job_attributes_li = soup.find('ul',{'class':'job-criteria__list'}).select('li')
-    for i in range(len(job_attributes)):
-        # info[job_attributes[i].text] = job_attributes_li[i].text
-        temp_list = job_attributes_li[i].select('span')
-        temp_text = ''
-        for temp in temp_list:
-            temp_text +=(temp.text + ',\n')
-        info[job_attributes[i].text] = temp_text
+for m in range(len(url_list)):
+    original_job_links, shortened_job_links, job_ids = Instance.get_all_links(driver,url_list[m])
+
+    big_dict = {}
+
+    for n in range(len(shortened_job_links)):
+        soup = Instance.get_job_information(driver,shortened_job_links[n])
+        
+        # url = 'https://www.linkedin.com/jobs/view/1880454978/'
+        # soup = Instance.get_job_information(driver,url)
+        info = {}
+        if soup:
+            info['job_link'] = shortened_job_links[n]
+            temp = soup.find('section',{'class':'show-more-less-html'})
+            temp_text = temp.get_text(('\n'))
+            temp_text = temp_text.replace('\n \n','\n')
+            info['job_description'] = temp_text.replace('\n','\n\n')
+            info['job_title'] = soup.find('h2').text
+            company_info = soup.findAll('h3',{'class':"topcard__flavor-row"})
+            info['company_name'] = company_info[0].select('span')[0].text
+            info['company_location'] = company_info[0].select('span')[1].text
+            info['post_time'] = company_info[1].select('span')[0].text
+            info['current_applicants'] = company_info[1].select('span')[1].text
+            job_attributes = soup.find('ul',{'class':'job-criteria__list'}).select('h3')
+            job_attributes_li = soup.find('ul',{'class':'job-criteria__list'}).select('li')
+            for i in range(len(job_attributes)):
+                # info[job_attributes[i].text] = job_attributes_li[i].text
+                temp_list = job_attributes_li[i].select('span')
+                temp_text = ''
+                for temp in temp_list:
+                    temp_text +=(temp.text + ',\n')
+                info[job_attributes[i].text] = temp_text
+        
+        big_dict[soup.title.text] = info
+        print('{} scraping is finished'.format(soup.title.text))
+    final_dict['page'+ ' ' + m + 'of search results'] = big_dict
+    print('Scraping for the page {} of the search results is finished'.format(m))
+    print('================================')
+    time.sleep(randint(5,10))
     
     
     
