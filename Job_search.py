@@ -20,20 +20,24 @@ def Search(driver,search_bar,result_filter):
     time.sleep(1)
     
     #element = driver.find_element_by_xpath("//div[@class ='nav-search-bar']/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/input[1]")
-    element = WebDriverWait(driver,25).until(EC.visibility_of_element_located((By.XPATH,("//div[@class ='nav-search-bar']/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/input[1]"))))
+
+    WebDriverWait(driver,25).until(EC.visibility_of_all_elements_located)
+    element = WebDriverWait(driver,25).until(EC.element_to_be_clickable((By.XPATH,("//div[@class ='nav-search-bar']/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/input[1]"))))
+    time.sleep(3)
     
     # Search by keyword and location
     search_keyword = search_bar['keyword']
     location = search_bar['location']
     
-    element.send_keys(search_keyword + Keys.TAB)
+
+    element.send_keys(search_keyword + Keys.SPACE + Keys.TAB)
     time.sleep(3)
     
     element = driver.find_element_by_xpath("//div[@class ='nav-search-bar']/div[1]/div[1]/div[1]/div[3]/div[1]/div[1]/input[1]")
-    element.send_keys(location)
+    element.send_keys(location + Keys.SPACE)
     time.sleep(3)
     element.send_keys(Keys.TAB + Keys.ENTER)
-    time.sleep(1)
+    time.sleep(3)
     
     
     
@@ -52,9 +56,10 @@ def Search(driver,search_bar,result_filter):
             time.sleep(1)
             break
         except:
-            pass
+            continue
     
-    
+    WebDriverWait(driver,25).until(EC.element_to_be_clickable((By.XPATH,"//div[@id='date-posted-facet-values']/fieldset[1]/div[1]/ul[1]/li[1]/label[1]")))
+    time.sleep(1)
     # Single-Choice: Sort By
     # most recent
     if result_filter['sort_by'] == 'Most recent':

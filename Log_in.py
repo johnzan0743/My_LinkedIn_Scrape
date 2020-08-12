@@ -19,6 +19,8 @@ def login(driver):
     
 
     driver.get(url)
+    WebDriverWait(driver,25).until(EC.visibility_of_all_elements_located)
+    
     driver.find_element_by_xpath("//input[@id='session_key']").send_keys(Email)
     driver.find_element_by_xpath("//input[@id='session_password']").send_keys(Password)
     driver.find_element_by_xpath("//button[@type='submit']").submit()

@@ -20,9 +20,23 @@ from random import random
 
 class Scraping():
     def __init__(self, driver):
-        driver.implicitly_wait(10)
+        WebDriverWait(driver,25).until(EC.visibility_of_element_located((By.XPATH,"//li[@data-test-pagination-page-btn]")))
+        time.sleep(3)
         self.last_page = driver.find_elements_by_xpath("//li[@data-test-pagination-page-btn]")[-1].text
         self.url = driver.current_url
+        # self.user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36'
+        
+        # cookies = driver.get_cookies()
+        # self.final_cookie = ''
+        # for cookie in cookies:
+        #     key = cookie['name']
+        #     value = cookie['value']
+        #     string = key + '=' + value + '; '
+        #     self.final_cookie +=string
+
+        # print('Cookies are {}'.format(self.final_cookie))
+        # self.headers = {'User-Agent':self.user_agent, 'Cookie':self.final_cookie}   
+        
         try:
             self.last_page = int(self.last_page)
             self.flag = 1
@@ -54,23 +68,23 @@ class Scraping():
         driver.get(current_url)
         # print('1')
         # driver.execute_script("window.scrollTo(0,100)")
-        for i in range(10):
+        for i in range(20):
             try:
                 #element = driver.find_element_by_xpath("//ul[@itemtype='http://schema.org/ItemList']/li[1]/div[1]/div[1]/div[2]/div[1]/a[1]")
                 element = WebDriverWait(driver,25).until(EC.presence_of_element_located((By.XPATH,"//ul[@itemtype='http://schema.org/ItemList']/li[1]/div[1]/div[1]/div[2]/div[1]/a[1]")))
-                break
+                element.send_keys(Keys.PAGE_DOWN)
+                time.sleep(random()+0.5)
             except:
-                f'Element cannot be loaded or found,try the {i}th time'
+                continue
+                
         
-        for i in range(30):
-            element.send_keys(Keys.PAGE_DOWN)
-            time.sleep(random())
+
             
         # js="var q=document.documentElement.scrollTop=10000"
         # driver.execute_script(js)
         
         job_elements = driver.find_elements_by_xpath("//ul[@itemtype='http://schema.org/ItemList']/li")
-        driver.implicitly_wait(10)
+
         # print('2')
         original_job_links = []
 
@@ -105,12 +119,14 @@ class Scraping():
     def get_job_information(self,driver,job_link):
         try:
             response = requests.get(job_link)
-        except:
-            print('URL is not valid')
+        except Exception as e:
+            print('URL is not valid or connection is aborted')
             print(job_link)
+            print(e)
             return 
         
-        
+        # going to the actual LinkedIn job page
+        ''' 
         driver.get(job_link)
         WebDriverWait(driver,25).until(EC.visibility_of_all_elements_located)
         try:
@@ -119,17 +135,28 @@ class Scraping():
             return 
         except:
             pass
-                
-            
-        job_title = driver.find_element_by_tag_name('h1').text
-        company_location = driver.find_element_by_xpath("//h3/span[3]").text
-        post_time = driver.find_element_by_xpath("//p/span[2]").text
-        number_of_applicant = driver.find_element_by_xpath("//p/span[3]/span[2]").text
-        
-        try:
-            driver.find_element_by_xpath("//button[@aria-label='See more']").click()
+        '''
+        try:        
+            # res=requests.get(job_link,headers=self.headers)
+            res=requests.get(job_link)
+            time.sleep(5)
+            if res.status_code == 200:
+                soup=BeautifulSoup(res.content,'html.parser')
         except:
-            print("No need to expand the job description")
+            print('Something is wrong, status code is {}'.format(res.status_code))
+            soup = None
+            return soup
+        
+        return soup
+        # job_title = driver.find_element_by_tag_name('h1').text
+        # company_location = driver.find_element_by_xpath("//h3/span[3]").text
+        # post_time = driver.find_element_by_xpath("//p/span[2]").text
+        # number_of_applicant = driver.find_element_by_xpath("//p/span[3]/span[2]").text
+        
+        # try:
+        #     driver.find_element_by_xpath("//button[@aria-label='See more']").click()
+        # except:
+        #     print("No need to expand the job description")
         
     
         
