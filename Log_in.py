@@ -13,8 +13,8 @@ from selenium.webdriver.common.by import By
 
 # one-time only
 def login(driver):
-    Email = 'johnzanzan@gmail.com'
-    Password = 'Acsk070743'
+    Email = 'xxxxxx@yyy.com'
+    Password = 'xxxxxx'
     url = 'https://www.linkedin.com/home'
     
 
